@@ -3,16 +3,14 @@ class Car {
         this.ctx = ctx;
         this.cvs = cvs;
         this.road = road;
+
         this.x = 60;
         this.y = 220;
-
         this.angle = 0; // Radians
-
         this.speed = 2;
 
         this.left = false;
         this.right = false;
-
         this.changeLeft = true;
         this.changeRight = true;
 
@@ -25,7 +23,11 @@ class Car {
         this.disLeftDiag = -1;
         this.disRightDiag = -1;
 
-        this.wih = []
+        this.lifeTime = 0;
+        this.fillColour = "#00ff00";
+
+        this.wih = [];
+        this.who = [];
 
         // From 5 to 10
         for (var i = 0; i < 10; i++) {
@@ -36,8 +38,6 @@ class Car {
             this.wih.push(row);
         }
 
-        this.who = [];
-
         // From 10 to 2
         for (var i = 0; i < 2; i++) {
             var row = [];
@@ -46,10 +46,6 @@ class Car {
             }
             this.who.push(row);
         }
-
-        this.lifeTime = 0;
-
-        this.fillColour = "#00ff00";
     }
 
     draw() {
@@ -102,7 +98,6 @@ class Car {
         var midYLR = (left[1] + right[1]) / 2;
 
         var gradient = (midYSB - midYLR) / (midXSB - midXLR);
-
         var dir = 1000;
 
         if (midXSB < midXLR) {
@@ -141,7 +136,6 @@ class Car {
         var midY = (midYSB + midYLR) / 2;
 
         var gradient = (start[1] - bottom[1]) / (start[0] - bottom[0]);
-
         var dir = 1000;
 
         if (midYSB < midYLR) {
@@ -178,7 +172,6 @@ class Car {
         var midY = (midYSB + midYLR) / 2;
 
         var gradient = (start[1] - bottom[1]) / (start[0] - bottom[0]);
-
         var dir = -1000;
 
         if (midYSB < midYLR) {
@@ -212,14 +205,13 @@ class Car {
         var pY = bottom[1];
 
         var gradient = (bottom[1] - left[1]) / (bottom[0] - left[0]);
+        var dir = 1000;
 
         if (this.left) {
             gradient = (start[1] - right[1]) / (start[0] - right[0]);
             pX = start[0];
             pY = start[1];
         }
-
-        var dir = 1000;
 
         if (!this.left && bottom[0] < left[0]) {
             dir = -1000;
@@ -258,14 +250,13 @@ class Car {
         var pY = start[1];
 
         var gradient = (start[1] - right[1]) / (start[0] - right[0]);
+        var dir = 1000;
 
         if (this.left) {
             gradient = (bottom[1] - left[1]) / (bottom[0] - left[0]);
             pX = bottom[0];
             pY = bottom[1];
         }
-
-        var dir = 1000;
 
         if (!this.left && start[0] < right[0]) {
             dir = -1000;
@@ -466,11 +457,8 @@ class Car {
 
         var res = false;
 
-        if (this.check(this.road.innerLines, start, bottom, left, right)) {
-            res = true;
-        }
-
-        if (this.check(this.road.outerlines, start, bottom, left, right)) {
+        if (this.check(this.road.innerLines, start, bottom, left, right) ||
+            this.check(this.road.outerlines, start, bottom, left, right)) {
             res = true;
         }
 
@@ -508,7 +496,6 @@ class Car {
     turnLeft(x) {
 
         this.left = x;
-
         if (!x) {
             this.changeLeft = true;
         }
