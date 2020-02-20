@@ -45,13 +45,13 @@ function applySigmoid(a) {
     return res;
 }
 
-function mutate(a) {
+function mutate(a, diff) {
     var res = [];
     for (var i = 0; i < a.length; i++) {
         res.push([]);
         for (var j = 0; j < a[0].length; j++) {
             if (Math.random() < 0.4) {
-                res[i][j] = a[i][j] + 50 * (Math.random() - 0.5);
+                res[i][j] = a[i][j] + diff * (Math.random() - 0.5);
             }
         }
     }

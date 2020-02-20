@@ -16,72 +16,99 @@ function reset() {
     gen = 1;
 }
 
+function shuffle(array) {
+
+	var currentIndex = array.length;
+	var temporaryValue, randomIndex;
+
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+
+}
+
 function regenerate() {
     gen++;
 
     var newGen = [];
 
     cars.sort((a, b) => b.lifeTime - a.lifeTime);
+
+    // Prev gen - orange
+    // Mutants - light blue
+    // Averages - purple
+    // New - green
           
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 15; i++) {
         var addition = new Car(ctx, cvs, road);
 
         addition.who = cars[i].who;
         addition.wih = cars[i].wih;
 
+        addition.fillColour = "#fcba03";
+
+        newGen.push(addition);
+    }
+
+    for (var i = 0; i < 25; i++) {
+        var addition = new Car(ctx, cvs, road);
+
+        addition.who = mutate(cars[0].who, i * 3);
+        addition.wih = mutate(cars[0].wih, i * 3);
+
+        addition.fillColour = "#03fcf4";
+
+        newGen.push(addition);
+    }
+
+    for (var i = 0; i < 15; i++) {
+        var addition = new Car(ctx, cvs, road);
+
+        addition.who = mutate(cars[1].who, i * 3);
+        addition.wih = mutate(cars[1].wih, i *3);
+
+        addition.fillColour = "#03fcf4";
+
+        newGen.push(addition);
+    }
+
+    for (var i = 0; i < 15; i++) {
+        var addition = new Car(ctx, cvs, road);
+
+        addition.who = mutate(cars[2].who, i * 3);
+        addition.wih = mutate(cars[2].wih, i * 3);
+
+        addition.fillColour = "#03fcf4";
+
+        newGen.push(addition);
+    }
+
+    for (var i = 1; i < 11; i++) {
+        var addition = new Car(ctx, cvs, road);
+
+        addition.fillColour = "#7b03fc";
+
+        addition.who = averageMatrices(cars[0].who, cars[i].who);
+        addition.wih = averageMatrices(cars[0].wih, cars[i].wih);
+
         newGen.push(addition);
     }
 
     for (var i = 0; i < 20; i++) {
-        var addition = new Car(ctx, cvs, road);
-
-        addition.who = mutate(cars[0].who);
-        addition.wih = mutate(cars[0].wih);
-
-        newGen.push(addition);
-    }
-
-    for (var i = 0; i < 10; i++) {
-        var addition = new Car(ctx, cvs, road);
-
-        addition.who = mutate(cars[1].who);
-        addition.wih = mutate(cars[1].wih);
-
-        newGen.push(addition);
-    }
-
-    for (var i = 0; i < 10; i++) {
-        var addition = new Car(ctx, cvs, road);
-
-        addition.who = mutate(cars[2].who);
-        addition.wih = mutate(cars[2].wih);
-
-        newGen.push(addition);
-    }
-
-    for (var i = 0; i < 5; i++) {
-        var addition = new Car(ctx, cvs, road);
-
-        addition.who = averageMatrices(cars[0].who, cars[1].who);
-        addition.wih = averageMatrices(cars[0].wih, cars[1].wih);
-
-        newGen.push(addition);
-    }
-
-    for (var i = 0; i < 1; i++) {
-        var addition = new Car(ctx, cvs, road);
-
-        addition.who = averageMatrices(cars[0].who, cars[2].who);
-        addition.wih = averageMatrices(cars[0].wih, cars[2].wih);
-
-        newGen.push(addition);
-    }
-
-    for (var i = 0; i < 14; i++) {
         newGen.push(new Car(ctx, cvs, road));
     }
 
-    cars = newGen;
+    cars = shuffle(newGen);
 }
 
 reset();

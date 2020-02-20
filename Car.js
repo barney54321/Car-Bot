@@ -46,6 +46,8 @@ class Car {
         ];
 
         this.lifeTime = 0;
+
+        this.fillColour = "#00ff00";
     }
 
     draw() {
@@ -53,7 +55,7 @@ class Car {
         if (this.colliding) {
             this.ctx.fillStyle = "#ff0000";
         } else {
-            this.ctx.fillStyle = "#00ff00";
+            this.ctx.fillStyle = this.fillColour;
         }
 
         // Default values for right or straight
