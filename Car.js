@@ -64,6 +64,37 @@ class Car {
         this.ctx.moveTo(start[0], start[1]);
         this.ctx.lineTo(bottom[0], bottom[1]);
         this.ctx.stroke();
+
+        // Draw line extending forward
+        var midXSB = (start[0] + bottom[0]) / 2;
+        var midYSB = (start[1] + bottom[1]) / 2;
+        var midXLR = (left[0] + right[0]) / 2;
+        var midYLR = (left[1] + right[1]) / 2;
+
+        var gradient = (midYSB - midYLR) / (midXSB - midXLR);
+
+        var dir = 1000;
+
+        if (midXSB < midXLR) {
+            dir = -1000;
+        }
+
+        var farPointX = midXSB + dir;
+        var farPointY = gradient * dir + midYSB;
+
+        if (gradient == -Infinity) {
+            farPointY = -1000;
+            farPointX = midXSB;
+        } else if (gradient == -Infinity) {
+            farPointY = 1000;
+            farPointX = midXSB;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(midXSB, midYSB);
+        this.ctx.lineTo(farPointX, farPointY);
+        this.ctx.stroke();
+
     }
 
     tick() {
