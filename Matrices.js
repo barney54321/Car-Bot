@@ -50,7 +50,7 @@ function mutate(a) {
     for (var i = 0; i < a.length; i++) {
         res.push([]);
         for (var j = 0; j < a[0].length; j++) {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.3) {
                 res[i][j] = a[i][j] + (Math.random() - 0.5);
             }
         }

@@ -17,6 +17,7 @@ class Car {
         this.changeRight = true;
 
         this.colliding = false;
+        this.alive = true;
 
         this.disFront = -1;
         this.disLeft = -1;
@@ -43,6 +44,8 @@ class Car {
             [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
             [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)]
         ];
+
+        this.lifeTime = 0;
     }
 
     draw() {
@@ -651,6 +654,8 @@ class Car {
     }
 
     tick() {
+        
+        this.lifeTime++;
 
         this.think();
 
@@ -717,6 +722,10 @@ class Car {
         }
 
         this.colliding = res;
+
+        if (this.colliding) {
+            this.alive = false;
+        }
     }
 
     check(lines, start, bottom, left, right) {
