@@ -1,34 +1,22 @@
 var cvs = document.getElementById("canvas");
 var ctx = cvs.getContext("2d");
+var genText = document.getElementById("gen");
 
 var road = new Road(ctx, cvs);
-var car = new Car(ctx, cvs, road);
+var gen = 0;
+var cars = [];
 
-function move(e) {
+function reset() {
+    cars = [];
 
-    var keyCode = e.keyCode;
-
-    if (keyCode == 37) {
-        car.turnLeft(true);
-    } else {
-        car.turnRight(true);
+    for (var i = 0; i < 10; i++) {
+        cars.push(new Car(ctx, cvs, road));
     }
 
+    gen++;
 }
 
-function stop(e) {
-    var keyCode = e.keyCode;
-
-    if (keyCode == 37) {
-        car.turnLeft(false);
-    } else {
-        car.turnRight(false);
-    }
-}
-
-document.addEventListener("keydown", move);
-document.addEventListener("keyup", stop);
-
+reset();
 
 function runner() {
 
@@ -37,10 +25,20 @@ function runner() {
     ctx.fillStyle = "#737475";
     ctx.fillRect(0, 0, cvs.width, cvs.height);
 
-    car.tick();
-
     road.draw();
-    car.draw();
+
+    for (var i = 0; i < cars.length; i++) {
+        cars[i].tick();
+        cars[i].draw();
+    }
+
+    cars = cars.filter((car) => !car.colliding);
+
+    if (cars.length == 0) {
+        reset();
+    }
+
+    genText.innerText = "Generation: " + gen;
 
     requestAnimationFrame(runner);
 }

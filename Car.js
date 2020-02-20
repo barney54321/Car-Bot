@@ -23,6 +23,26 @@ class Car {
         this.disRight = -1;
         this.disLeftDiag = -1;
         this.disRightDiag = -1;
+
+        // From 5 to 10
+        this.wih = [
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)]
+         ];
+
+        // From 10 to 2
+        this.who = [
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
+            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)]
+        ];
     }
 
     draw() {
@@ -610,7 +630,30 @@ class Car {
         }
     }
 
+    think() {
+        var inputs = transpose([this.disFront, this.disLeft, this.disRight, this.disLeftDiag, this.disRightDiag]);
+        var hiddenOutput = matrixMultiply(this.wih, inputs);
+        var hiddenResult = applySigmoid(hiddenOutput);
+        var outputs = matrixMultiply(this.who, hiddenResult);
+        var result = applySigmoid(outputs);
+
+        if (result[0][0] > 0.5) {
+            this.turnLeft(true);
+        } else {
+            this.turnLeft(false);
+        }
+
+        if (result[1][0] > 0.5) {
+            this.turnRight(true);
+        } else {
+            this.turnRight(false);
+        }
+    }
+
     tick() {
+
+        this.think();
+
         this.x -= this.speed * Math.sin(this.angle);
         this.y -= this.speed * Math.cos(this.angle);
 
@@ -742,3 +785,8 @@ function intersects(a,b,c,d,p,q,r,s) {
         return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
     }
 };
+
+// Returns random number in range
+function randomNumber(max, min) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
