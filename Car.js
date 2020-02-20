@@ -3,13 +3,9 @@ class Car {
         this.ctx = ctx;
         this.cvs = cvs;
         this.road = road;
-        this.x = 200;
-        this.y = 200;
+        this.x = 60;
+        this.y = 220;
 
-        // Math.PI -> down
-        // 0 -> up
-        // Math.PI / 2 -> left 
-        // -Math.PI / 2 -> right 
         this.angle = 0; // Radians
 
         this.speed = 2;
@@ -21,6 +17,12 @@ class Car {
         this.changeRight = true;
 
         this.colliding = false;
+
+        this.disFront = -1;
+        this.disLeft = -1;
+        this.disRight = -1;
+        this.disLeftDiag = -1;
+        this.disRightDiag = -1;
     }
 
     draw() {
@@ -167,6 +169,9 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
+            this.disFront = (closest.x - midXSB) * (closest.x - midXSB) + (closest.y - midYSB) * (closest.y - midYSB);
+        } else {
+            this.disFront = -1;
         }
     }
 
@@ -265,6 +270,9 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
+            this.disLeft = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY);
+        } else {
+            this.disLeft = -1;
         }
     }
 
@@ -363,6 +371,9 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
+            this.disRight = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY);
+        } else {
+            this.disRight = -1;
         }
     }
 
@@ -465,6 +476,9 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
+            this.disLeftDiag = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY);
+        } else {
+            this.disLeftDiag = -1;
         }
     }
 
@@ -567,6 +581,9 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
+            this.disRightDiag = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY);
+        } else {
+            this.disRightDiag = -1;
         }
     }
 
