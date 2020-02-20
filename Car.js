@@ -25,25 +25,27 @@ class Car {
         this.disLeftDiag = -1;
         this.disRightDiag = -1;
 
+        this.wih = []
+
         // From 5 to 10
-        this.wih = [
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)]
-         ];
+        for (var i = 0; i < 10; i++) {
+            var row = [];
+            for (var j = 0; j < 5; j++) {
+                row.push(randomNumber(100, -100));
+            }
+            this.wih.push(row);
+        }
+
+        this.who = [];
 
         // From 10 to 2
-        this.who = [
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)],
-            [randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100), randomNumber(100, -100)]
-        ];
+        for (var i = 0; i < 2; i++) {
+            var row = [];
+            for (var j = 0; j < 10; j++) {
+                row.push(randomNumber(100, -100));
+            }
+            this.who.push(row);
+        }
 
         this.lifeTime = 0;
 
@@ -90,17 +92,6 @@ class Car {
         this.ctx.stroke();
         this.ctx.fill();
 
-        // Double lines at front
-        this.ctx.beginPath();
-        this.ctx.moveTo(start[0], start[1]);
-        this.ctx.lineTo(bottom[0], bottom[1]);
-        this.ctx.stroke();
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(start[0], start[1]);
-        this.ctx.lineTo(bottom[0], bottom[1]);
-        this.ctx.stroke();  
-
     }
 
     drawFrontLine(start, bottom, left, right) {
@@ -129,66 +120,7 @@ class Car {
             farPointX = midXSB;
         }
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(midXSB, midYSB);
-        this.ctx.lineTo(farPointX, farPointY);
-        this.ctx.stroke();
-
-        var closest = null;
-
-        for (var i = 0; i < this.road.innerLines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midXSB, midYSB, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midXSB, midYSB, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midXSB) * (closest.x - midXSB) + (closest.y - midYSB) * (closest.y - midYSB)
-                var disRes = (res.x - midXSB) * (res.x - midXSB) + (res.y - midYSB) * (res.y - midYSB)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
-
-        for (var i = 0; i < this.road.outerlines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midXSB, midYSB, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midXSB, midYSB, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midXSB) * (closest.x - midXSB) + (closest.y - midYSB) * (closest.y - midYSB)
-                var disRes = (res.x - midXSB) * (res.x - midXSB) + (res.y - midYSB) * (res.y - midYSB)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
+        var closest = this.drawSide(midXSB, midYSB, farPointX, farPointY);
 
         if (closest != null) {
             ctx.beginPath();
@@ -201,7 +133,6 @@ class Car {
     }
 
     drawLeftLine(start, bottom, left, right) {
-        // Draw line extending forward
         var midXSB = (start[0] + bottom[0]) / 2;
         var midYSB = (start[1] + bottom[1]) / 2;
         var midXLR = (left[0] + right[0]) / 2;
@@ -220,76 +151,13 @@ class Car {
         var farPointX = midX + dir;
         var farPointY = gradient * dir + midY;
 
-        if (gradient == -Infinity) {
-            gradient = 0;
-            farPointY = midY;
-            farPointX = 1000;
-        } else if (gradient == Infinity) {
+        if (gradient == Infinity || gradient == -Infinity) {
             gradient = 0;
             farPointY = midY;
             farPointX = 1000;
         }
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(midX, midY);
-        this.ctx.lineTo(farPointX, farPointY);
-        this.ctx.stroke();
-
-        var closest = null;
-
-        for (var i = 0; i < this.road.innerLines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midX, midY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midX, midY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
-                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
-
-        for (var i = 0; i < this.road.outerlines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midX, midY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midX, midY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
-                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
+        var closest = this.drawSide(midX, midY, farPointX, farPointY);
 
         if (closest != null) {
             ctx.beginPath();
@@ -302,7 +170,6 @@ class Car {
     }
 
     drawRightLine(start, bottom, left, right) {
-        // Draw line extending forward
         var midXSB = (start[0] + bottom[0]) / 2;
         var midYSB = (start[1] + bottom[1]) / 2;
         var midXLR = (left[0] + right[0]) / 2;
@@ -321,76 +188,13 @@ class Car {
         var farPointX = midX + dir;
         var farPointY = gradient * dir + midY;
 
-        if (gradient == -Infinity) {
-            gradient = 0;
-            farPointY = midY;
-            farPointX = 1000;
-        } else if (gradient == Infinity) {
+        if (gradient == -Infinity || gradient == Infinity) {
             gradient = 0;
             farPointY = midY;
             farPointX = 1000;
         }
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(midX, midY);
-        this.ctx.lineTo(farPointX, farPointY);
-        this.ctx.stroke();
-
-        var closest = null;
-
-        for (var i = 0; i < this.road.innerLines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midX, midY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midX, midY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
-                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
-
-        for (var i = 0; i < this.road.outerlines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midX, midY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midX, midY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
-                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
+        var closest = this.drawSide(midX, midY, farPointX, farPointY);
 
         if (closest != null) {
             ctx.beginPath();
@@ -436,66 +240,7 @@ class Car {
             farPointX = 1000;
         }
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(pX, pY);
-        this.ctx.lineTo(farPointX, farPointY);
-        this.ctx.stroke();
-
-        var closest = null;
-
-        for (var i = 0; i < this.road.innerLines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], pX, pY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], pX, pY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
-                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
-
-        for (var i = 0; i < this.road.outerlines.length; i++) {
-
-            var res = null;
-
-            if (i == 0) {
-                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], pX, pY, farPointX, farPointY);
-            } else {
-                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], pX, pY, farPointX, farPointY);
-            }
-
-            if (res == undefined) {
-                continue;
-            }
-
-            if (closest == null) {
-                closest = res;
-            } else {
-
-                // Check whether point is closer than current closer
-                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
-                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
-                if (disRes < disClosest) {
-                    closest = res;
-                }
-            }
-        }
+        var closest = this.drawSide(pX, pY, farPointX, farPointY);
 
         if (closest != null) {
             ctx.beginPath();
@@ -541,8 +286,21 @@ class Car {
             farPointX = 1000;
         }
 
+        var closest = this.drawSide(pX, pY, farPointX, farPointY);
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+            this.disRightDiag = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY);
+        } else {
+            this.disRightDiag = -1;
+        }
+    }
+
+    drawSide(midX, midY, farPointX, farPointY) {
         this.ctx.beginPath();
-        this.ctx.moveTo(pX, pY);
+        this.ctx.moveTo(midX, midY);
         this.ctx.lineTo(farPointX, farPointY);
         this.ctx.stroke();
 
@@ -553,9 +311,9 @@ class Car {
             var res = null;
 
             if (i == 0) {
-                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], pX, pY, farPointX, farPointY);
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midX, midY, farPointX, farPointY);
             } else {
-                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], pX, pY, farPointX, farPointY);
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midX, midY, farPointX, farPointY);
             }
 
             if (res == undefined) {
@@ -567,8 +325,8 @@ class Car {
             } else {
 
                 // Check whether point is closer than current closer
-                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
-                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
                 if (disRes < disClosest) {
                     closest = res;
                 }
@@ -580,9 +338,9 @@ class Car {
             var res = null;
 
             if (i == 0) {
-                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], pX, pY, farPointX, farPointY);
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midX, midY, farPointX, farPointY);
             } else {
-                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], pX, pY, farPointX, farPointY);
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midX, midY, farPointX, farPointY);
             }
 
             if (res == undefined) {
@@ -594,22 +352,15 @@ class Car {
             } else {
 
                 // Check whether point is closer than current closer
-                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
-                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
                 if (disRes < disClosest) {
                     closest = res;
                 }
             }
         }
 
-        if (closest != null) {
-            ctx.beginPath();
-            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
-            ctx.stroke();
-            this.disRightDiag = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY);
-        } else {
-            this.disRightDiag = -1;
-        }
+        return closest;
     }
 
     getCircle(line1, line2, midXSB, midYSB, farPointX, farPointY) {
@@ -733,37 +484,21 @@ class Car {
     check(lines, start, bottom, left, right) {
         var res = false;
 
+        // Go through all lines in track
         for (var i = 1; i < lines.length; i++) {
-            if (intersects(start[0], start[1], bottom[0], bottom[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1])) {
-                res = true;
-            }
-
-            if (intersects(right[0], right[1], bottom[0], bottom[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1])) {
-                res = true;
-            }
-
-            if (intersects(right[0], right[1], left[0], left[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1])) {
-                res = true;
-            }
-
-            if (intersects(start[0], start[1], left[0], left[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1])) {
+            if (intersects(start[0], start[1], bottom[0], bottom[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1]) ||
+                intersects(right[0], right[1], bottom[0], bottom[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1]) ||
+                intersects(right[0], right[1], left[0], left[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1]) ||
+                intersects(start[0], start[1], left[0], left[1], lines[i - 1][0], lines[i - 1][1], lines[i][0], lines[i][1])) {
                 res = true;
             }
         }
 
-        if (intersects(start[0], start[1], bottom[0], bottom[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1])) {
-            res = true;
-        }
-
-        if (intersects(right[0], right[1], bottom[0], bottom[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1])) {
-            res = true;
-        }
-
-        if (intersects(right[0], right[1], left[0], left[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1])) {
-            res = true;
-        }
-
-        if (intersects(start[0], start[1], left[0], left[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1])) {
+        // Go through line from last vertex to first
+        if (intersects(start[0], start[1], bottom[0], bottom[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1]) ||
+            intersects(right[0], right[1], bottom[0], bottom[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1]) ||
+            intersects(right[0], right[1], left[0], left[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1]) ||
+            intersects(start[0], start[1], left[0], left[1], lines[lines.length - 1][0], lines[lines.length - 1][1], lines[0][0], lines[0][1])) {
             res = true;
         }
         
