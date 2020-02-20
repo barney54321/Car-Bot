@@ -51,7 +51,7 @@ function mutate(a) {
         res.push([]);
         for (var j = 0; j < a[0].length; j++) {
             if (Math.random() < 0.4) {
-                res[i][j] = a[i][j] + (Math.random() - 0.5);
+                res[i][j] = a[i][j] + 50 * (Math.random() - 0.5);
             }
         }
     }
