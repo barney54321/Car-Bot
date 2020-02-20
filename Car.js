@@ -24,6 +24,7 @@ class Car {
     }
 
     draw() {
+
         if (this.colliding) {
             this.ctx.fillStyle = "#ff0000";
         } else {
@@ -45,6 +46,14 @@ class Car {
 
         } 
 
+        // Draw eyesight underneath
+        this.drawFrontLine(start, bottom, left, right);
+        this.drawLeftLine(start, bottom, left, right);
+        this.drawRightLine(start, bottom, left, right);
+        this.drawLeftDiagonal(start, bottom, left, right);
+        this.drawRightDiagonal(start, bottom, left, right);
+
+        // Draw box
         this.ctx.beginPath();
         this.ctx.moveTo(start[0], start[1]);
         this.ctx.lineTo(bottom[0], bottom[1]);
@@ -63,8 +72,11 @@ class Car {
         this.ctx.beginPath();
         this.ctx.moveTo(start[0], start[1]);
         this.ctx.lineTo(bottom[0], bottom[1]);
-        this.ctx.stroke();
+        this.ctx.stroke();  
 
+    }
+
+    drawFrontLine(start, bottom, left, right) {
         // Draw line extending forward
         var midXSB = (start[0] + bottom[0]) / 2;
         var midYSB = (start[1] + bottom[1]) / 2;
@@ -85,7 +97,7 @@ class Car {
         if (gradient == -Infinity) {
             farPointY = -1000;
             farPointX = midXSB;
-        } else if (gradient == -Infinity) {
+        } else if (gradient == Infinity) {
             farPointY = 1000;
             farPointX = midXSB;
         }
@@ -155,8 +167,407 @@ class Car {
             ctx.beginPath();
             ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
             ctx.stroke();
-        }        
+        }
+    }
 
+    drawLeftLine(start, bottom, left, right) {
+        // Draw line extending forward
+        var midXSB = (start[0] + bottom[0]) / 2;
+        var midYSB = (start[1] + bottom[1]) / 2;
+        var midXLR = (left[0] + right[0]) / 2;
+        var midYLR = (left[1] + right[1]) / 2;
+        var midX = (midXSB + midXLR) / 2;
+        var midY = (midYSB + midYLR) / 2;
+
+        var gradient = (start[1] - bottom[1]) / (start[0] - bottom[0]);
+
+        var dir = 1000;
+
+        if (midYSB < midYLR) {
+            dir = -1000;
+        }
+
+        var farPointX = midX + dir;
+        var farPointY = gradient * dir + midY;
+
+        if (gradient == -Infinity) {
+            gradient = 0;
+            farPointY = midY;
+            farPointX = 1000;
+        } else if (gradient == Infinity) {
+            gradient = 0;
+            farPointY = midY;
+            farPointX = 1000;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(midX, midY);
+        this.ctx.lineTo(farPointX, farPointY);
+        this.ctx.stroke();
+
+        var closest = null;
+
+        for (var i = 0; i < this.road.innerLines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midX, midY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midX, midY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        for (var i = 0; i < this.road.outerlines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midX, midY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midX, midY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }
+    }
+
+    drawRightLine(start, bottom, left, right) {
+        // Draw line extending forward
+        var midXSB = (start[0] + bottom[0]) / 2;
+        var midYSB = (start[1] + bottom[1]) / 2;
+        var midXLR = (left[0] + right[0]) / 2;
+        var midYLR = (left[1] + right[1]) / 2;
+        var midX = (midXSB + midXLR) / 2;
+        var midY = (midYSB + midYLR) / 2;
+
+        var gradient = (start[1] - bottom[1]) / (start[0] - bottom[0]);
+
+        var dir = -1000;
+
+        if (midYSB < midYLR) {
+            dir = 1000;
+        }
+
+        var farPointX = midX + dir;
+        var farPointY = gradient * dir + midY;
+
+        if (gradient == -Infinity) {
+            gradient = 0;
+            farPointY = midY;
+            farPointX = 1000;
+        } else if (gradient == Infinity) {
+            gradient = 0;
+            farPointY = midY;
+            farPointX = 1000;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(midX, midY);
+        this.ctx.lineTo(farPointX, farPointY);
+        this.ctx.stroke();
+
+        var closest = null;
+
+        for (var i = 0; i < this.road.innerLines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midX, midY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midX, midY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        for (var i = 0; i < this.road.outerlines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midX, midY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midX, midY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midX) * (closest.x - midX) + (closest.y - midY) * (closest.y - midY)
+                var disRes = (res.x - midX) * (res.x - midX) + (res.y - midY) * (res.y - midY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }
+    }
+
+    drawLeftDiagonal(start, bottom, left, right) {
+
+        var pX = bottom[0];
+        var pY = bottom[1];
+
+        var gradient = (bottom[1] - left[1]) / (bottom[0] - left[0]);
+
+        if (this.left) {
+            gradient = (start[1] - right[1]) / (start[0] - right[0]);
+            pX = start[0];
+            pY = start[1];
+        }
+
+        var dir = 1000;
+
+        if (!this.left && bottom[0] < left[0]) {
+            dir = -1000;
+        } else if (this.left && start[0] < right[0]) {
+            dir = -1000;
+        }
+
+        var farPointX = pX + dir;
+        var farPointY = gradient * dir + pY;
+
+        if (gradient == -Infinity) {
+            gradient = 0;
+            farPointY = pY;
+            farPointX = 1000;
+        } else if (gradient == Infinity) {
+            gradient = 0;
+            farPointY = pY;
+            farPointX = 1000;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(pX, pY);
+        this.ctx.lineTo(farPointX, farPointY);
+        this.ctx.stroke();
+
+        var closest = null;
+
+        for (var i = 0; i < this.road.innerLines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], pX, pY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], pX, pY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
+                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        for (var i = 0; i < this.road.outerlines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], pX, pY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], pX, pY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
+                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }
+    }
+
+    drawRightDiagonal(start, bottom, left, right) {
+
+        var pX = start[0];
+        var pY = start[1];
+
+        var gradient = (start[1] - right[1]) / (start[0] - right[0]);
+
+        if (this.left) {
+            gradient = (bottom[1] - left[1]) / (bottom[0] - left[0]);
+            pX = bottom[0];
+            pY = bottom[1];
+        }
+
+        var dir = 1000;
+
+        if (!this.left && start[0] < right[0]) {
+            dir = -1000;
+        } else if (this.left && bottom[0] < left[0]) {
+            dir = -1000;
+        }
+
+        var farPointX = pX + dir;
+        var farPointY = gradient * dir + pY;
+
+        if (gradient == -Infinity) {
+            gradient = 0;
+            farPointY = pY;
+            farPointX = 1000;
+        } else if (gradient == Infinity) {
+            gradient = 0;
+            farPointY = pY;
+            farPointX = 1000;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(pX, pY);
+        this.ctx.lineTo(farPointX, farPointY);
+        this.ctx.stroke();
+
+        var closest = null;
+
+        for (var i = 0; i < this.road.innerLines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], pX, pY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], pX, pY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
+                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        for (var i = 0; i < this.road.outerlines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], pX, pY, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], pX, pY, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - pX) * (closest.x - pX) + (closest.y - pY) * (closest.y - pY)
+                var disRes = (res.x - pX) * (res.x - pX) + (res.y - pY) * (res.y - pY)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }
     }
 
     getCircle(line1, line2, midXSB, midYSB, farPointX, farPointY) {
@@ -174,10 +585,6 @@ class Car {
 
             var pX = (b2 * c1 - b1 * c2) / delta;
             var pY = (a1 * c2 - a2 * c1) / delta;
-
-            // ctx.beginPath();
-            // ctx.arc(pX, pY, 5, 0, 2 * Math.PI, false);
-            // ctx.stroke();
 
             return {
                 x: pX,

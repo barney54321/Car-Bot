@@ -11,10 +11,10 @@ class Road {
 
         this.outerlines.push([30, 30]);
         this.outerlines.push([260, 90]);
-        this.outerlines.push([550, 40]);
+        this.outerlines.push([560, 40]);
         this.outerlines.push([580, 330]);
         this.outerlines.push([130, 390]);
-        this.outerlines.push([40, 230]);
+        this.outerlines.push([40, 240]);
 
         this.innerLines.push([100, 120]);
         this.innerLines.push([260, 160]);
