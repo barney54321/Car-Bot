@@ -95,6 +95,95 @@ class Car {
         this.ctx.lineTo(farPointX, farPointY);
         this.ctx.stroke();
 
+        var closest = null;
+
+        for (var i = 0; i < this.road.innerLines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.innerLines[this.road.innerLines.length - 1], this.road.innerLines[0], midXSB, midYSB, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.innerLines[i - 1], this.road.innerLines[i], midXSB, midYSB, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midXSB) * (closest.x - midXSB) + (closest.y - midYSB) * (closest.y - midYSB)
+                var disRes = (res.x - midXSB) * (res.x - midXSB) + (res.y - midYSB) * (res.y - midYSB)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        for (var i = 0; i < this.road.outerlines.length; i++) {
+
+            var res = null;
+
+            if (i == 0) {
+                res = this.getCircle(this.road.outerlines[this.road.outerlines.length - 1], this.road.outerlines[0], midXSB, midYSB, farPointX, farPointY);
+            } else {
+                res = this.getCircle(this.road.outerlines[i - 1], this.road.outerlines[i], midXSB, midYSB, farPointX, farPointY);
+            }
+
+            if (res == undefined) {
+                continue;
+            }
+
+            if (closest == null) {
+                closest = res;
+            } else {
+
+                // Check whether point is closer than current closer
+                var disClosest = (closest.x - midXSB) * (closest.x - midXSB) + (closest.y - midYSB) * (closest.y - midYSB)
+                var disRes = (res.x - midXSB) * (res.x - midXSB) + (res.y - midYSB) * (res.y - midYSB)
+                if (disRes < disClosest) {
+                    closest = res;
+                }
+            }
+        }
+
+        if (closest != null) {
+            ctx.beginPath();
+            ctx.arc(closest.x, closest.y, 5, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }        
+
+    }
+
+    getCircle(line1, line2, midXSB, midYSB, farPointX, farPointY) {
+        if (intersects(line1[0], line1[1], line2[0], line2[1], midXSB, midYSB, farPointX, farPointY)) {
+            // https://rosettacode.org/wiki/Find_the_intersection_of_two_lines#Java
+            var a1 = line2[1] - line1[1];
+            var b1 = line1[0] - line2[0];
+            var c1 = a1 * line1[0] + b1 * line1[1];
+
+            var a2 = farPointY - midYSB;
+            var b2 = midXSB - farPointX;
+            var c2 = a2 * midXSB + b2 * midYSB;
+
+            var delta = a1 * b2 - a2 * b1;
+
+            var pX = (b2 * c1 - b1 * c2) / delta;
+            var pY = (a1 * c2 - a2 * c1) / delta;
+
+            // ctx.beginPath();
+            // ctx.arc(pX, pY, 5, 0, 2 * Math.PI, false);
+            // ctx.stroke();
+
+            return {
+                x: pX,
+                y: pY
+            }
+        }
     }
 
     tick() {
