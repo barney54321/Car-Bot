@@ -10,19 +10,21 @@ class Road {
     makeLines() {
 
         this.outerlines.push([30, 50]);
-        this.outerlines.push([260, 20]);
+        this.outerlines.push([260, 100]);
         this.outerlines.push([560, 40]);
-        this.outerlines.push([580, 300]);
-        this.outerlines.push([300, 380]);
+        this.outerlines.push([580, 390]);
+        this.outerlines.push([400, 320]);
+        this.outerlines.push([300, 310]);
+        this.outerlines.push([100, 390]);
         this.outerlines.push([20, 350]);
         this.outerlines.push([10, 300]);
         this.outerlines.push([40, 240]);
 
         this.innerLines.push([100, 120]);
-        this.innerLines.push([260, 80]);
+        this.innerLines.push([250, 150]);
         this.innerLines.push([500, 120]);
         this.innerLines.push([490, 270]);
-        this.innerLines.push([300, 330]);
+        this.innerLines.push([300, 250]);
         this.innerLines.push([80, 320]);
         this.innerLines.push([100, 220]);
 
