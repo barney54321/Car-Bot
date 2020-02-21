@@ -60,11 +60,11 @@ function regenerate() {
         newGen.push(addition);
     }
 
-    for (var i = 0; i < 25; i++) {
+    for (var i = -12; i < 13; i++) {
         var addition = new Car(ctx, cvs, road);
 
-        addition.who = mutate(cars[0].who, i * 3);
-        addition.wih = mutate(cars[0].wih, i * 3);
+        addition.who = mutate(cars[0].who, i * 2);
+        addition.wih = mutate(cars[0].wih, i * 2);
 
         addition.fillColour = "#03fcf4";
 
@@ -74,8 +74,8 @@ function regenerate() {
     for (var i = 0; i < 15; i++) {
         var addition = new Car(ctx, cvs, road);
 
-        addition.who = mutate(cars[1].who, i * 3);
-        addition.wih = mutate(cars[1].wih, i *3);
+        addition.who = mutate(cars[1].who, i * 2);
+        addition.wih = mutate(cars[1].wih, i * 2);
 
         addition.fillColour = "#03fcf4";
 
@@ -85,8 +85,8 @@ function regenerate() {
     for (var i = 0; i < 15; i++) {
         var addition = new Car(ctx, cvs, road);
 
-        addition.who = mutate(cars[2].who, i * 3);
-        addition.wih = mutate(cars[2].wih, i * 3);
+        addition.who = mutate(cars[2].who, i * 2);
+        addition.wih = mutate(cars[2].wih, i * 2);
 
         addition.fillColour = "#03fcf4";
 
