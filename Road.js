@@ -25,7 +25,8 @@ class Road {
         this.innerLines.push([500, 120]);
         this.innerLines.push([490, 270]);
         this.innerLines.push([300, 250]);
-        this.innerLines.push([80, 320]);
+        this.innerLines.push([110, 320]);
+        this.innerLines.push([80, 300]);
         this.innerLines.push([100, 220]);
 
     }
